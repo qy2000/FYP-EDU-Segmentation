@@ -1,0 +1,5 @@
+torch~=1.2.0+cpu
+nltk~=3.7
+regex
+numpy~=1.21.6
+transformers~=4.21.3
