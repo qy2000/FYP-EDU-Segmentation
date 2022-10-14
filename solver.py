@@ -311,7 +311,7 @@ class TrainSolver(object):
 
 
 
-                neg_loss_v = float(neg_loss.data[0])
+                neg_loss_v = float(neg_loss.item())
                 print(neg_loss_v)
                 track_epoch_loss.append(neg_loss_v)
 

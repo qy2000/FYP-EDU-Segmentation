@@ -20,7 +20,7 @@ os.rmdir(SAVE_PATH)
 #                            dropout_prob=0.5, use_cuda=False, finedtuning=True, isbanor=True)
 
 my_model = PointerNetworks(voca_size=2, voc_embeddings=np.ndarray(shape=(2, 300), dtype=float), word_dim=300,
-                           hidden_dim=10, is_bi_encoder_rnn=True, encoder_type='BART', decoder_type='GRU', rnn_layers=3,
+                           hidden_dim=10, is_bi_encoder_rnn=True, encoder_type='BART', decoder_type='GRU', rnn_layers=6,
                            dropout_prob=0.5, use_cuda=False, finedtuning=True, isbanor=True)
 
 my_solver = TrainSolver(my_model, train_x=train_x, train_y=train_y, dev_x=test_x, dev_y=test_y, save_path=SAVE_PATH,

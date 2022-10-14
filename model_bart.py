@@ -33,12 +33,13 @@ class PointerNetworks(nn.Module):
         if encoder_type == 'BART':
 
             self.encoder_bart = BartModel.from_pretrained("facebook/bart-base")
+            self.hidden_dim = self.encoder_bart.config.hidden_size
 
 
         if decoder_type in ['LSTM', 'GRU']:
 
-            self.decoder_rnn = getattr(nn, decoder_type)(input_size=word_dim,
-                                                     hidden_size=2 * hidden_dim if is_bi_encoder_rnn else hidden_dim,
+            self.decoder_rnn = getattr(nn, decoder_type)(input_size=self.hidden_dim,
+                                                     hidden_size=self.hidden_dim,
                                                      num_layers=rnn_layers,
                                                      dropout=dropout_prob,
                                                      batch_first=True)
@@ -70,9 +71,9 @@ class PointerNetworks(nn.Module):
             self.num_encoder_bi = 1
 
 
-        self.nnW1 = nn.Linear(self.num_encoder_bi * hidden_dim, self.num_encoder_bi * hidden_dim, bias=False)
-        self.nnW2 = nn.Linear(self.num_encoder_bi * hidden_dim, self.num_encoder_bi * hidden_dim, bias=False)
-        self.nnV = nn.Linear(self.num_encoder_bi * hidden_dim, 1, bias=False)
+        self.nnW1 = nn.Linear(self.hidden_dim, self.hidden_dim, bias=False)
+        self.nnW2 = nn.Linear(self.hidden_dim, self.hidden_dim, bias=False)
+        self.nnV = nn.Linear(self.hidden_dim, 1, bias=False)
 
 
 
@@ -142,11 +143,11 @@ class PointerNetworks(nn.Module):
         h = outputs.encoder_last_hidden_state
         o = outputs.encoder_hidden_states
         o = torch.stack(list(o), dim=0)
+        o = o.squeeze(1)
         o = o.contiguous()
-
         o = self.nnDropout(o)
 
-        return o,h
+        return o, h
 
 
     def pointerLayer(self,en,di):
@@ -173,8 +174,8 @@ class PointerNetworks(nn.Module):
 
 
         #TODO: for log loss
-        att_weights = F.softmax(nnV)
-        logits = F.log_softmax(nnV)
+        att_weights = F.softmax(nnV, dim=1)
+        logits = F.log_softmax(nnV, dim=1)
 
 
 
@@ -211,9 +212,9 @@ class PointerNetworks(nn.Module):
 
             cur_lookup = curX[x_index_var]
 
-            curX_vectors = self.nnEm(cur_lookup)  # output: [seq,features]
-
-            curX_vectors = curX_vectors.unsqueeze(0)  # [batch, seq, features]
+            # curX_vectors = self.nnEm(cur_lookup)  # output: [seq,features]
+            #
+            # curX_vectors = curX_vectors.unsqueeze(0)  # [batch, seq, features]
 
 
 
@@ -229,21 +230,24 @@ class PointerNetworks(nn.Module):
 
                 h_pass = (curh0,curc0)
             else:
-                h_end = hend.permute(1, 0, 2).contiguous().view(batch_size, self.num_rnn_layers,-1)
-                curh0 = h_end[i].unsqueeze(0).permute(1, 0, 2)
-                h_pass = curh0
+                # h_end = hend.permute(1, 0, 2).contiguous().view(batch_size, self.num_rnn_layers,-1)
+                # curh0 = h_end[i].unsqueeze(0).permute(1, 0, 2)
+                # h_pass = curh0
+                h_pass = hend.permute(1, 0, 2)
+                # h_pass = h_pass.squeeze(1)
 
 
 
-            decoder_out,_ = self.decoder_rnn(curX_vectors,h_pass)
-            decoder_out = decoder_out.squeeze(0)   #[seq,features]
+            decoder_out,_ = self.decoder_rnn(h_pass)  #[seq,features]
 
 
             curencoder_hn = hn[i,0:curL,:]  # hn[batch,seq,H] -->[seq,H] i is loop batch size
 
-            for j in range(len(decoder_out)):  #Loop di
-                cur_dj = decoder_out[j]
+            for j in range(len(curY_index)):  #Loop di
                 cur_groundy = curY_index[j]
+                cur_dj = decoder_out[cur_groundy]
+                cur_dj = cur_dj.squeeze(1)
+
 
                 cur_start_index = curX_index[j]
                 predict_range = list(range(cur_start_index,curL))

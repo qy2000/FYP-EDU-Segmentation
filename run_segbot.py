@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
 
 
-    sent='Sheraton and Pan Am said they are assured under the Soviet joint-venture law that they can repatriate profits from their hotel venture.'
+    sent='Sheraton and Pan Am said they are assured under the Soviet joint-venture law that they can repatriate profits from their hotel venture. They have been doing this for the past seventeen years and it has been successful.'
 
 
     output_seg =  main_input_output(sent)

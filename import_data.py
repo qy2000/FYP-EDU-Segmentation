@@ -40,8 +40,12 @@ def read_data(path: str):
         with open(PATH + file, 'r') as f:
             words, tokens, boundaries = parse_file_text(f.read())
             all_words.append(words)
-            all_tokens.append(tokens)
-            all_boundaries.append(boundaries)
+
+            while len(tokens) > 1024:
+                all_tokens.append(tokens[:1024])
+                all_boundaries.append(boundaries[:1024])
+                tokens = tokens[1024:]
+                boundaries = boundaries[1024:]
     print("DONE IMPORT DATA")
     return all_words, all_tokens, all_boundaries
 
