@@ -13,7 +13,7 @@ train_y = np.array(all_boundaries[:8])
 test_x = np.array(all_tokens[8:])
 test_y = np.array(all_boundaries[8:])
 SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults"
-os.rmdir(SAVE_PATH)
+# os.rmdir(SAVE_PATH)
 
 # my_model = PointerNetworks(voca_size=2, voc_embeddings=np.ndarray(shape=(2, 300), dtype=float), word_dim=300,
 #                            hidden_dim=10, is_bi_encoder_rnn=True, rnn_type='GRU', rnn_layers=3,

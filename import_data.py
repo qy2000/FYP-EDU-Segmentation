@@ -36,16 +36,16 @@ def read_data(path: str):
     all_words = []
     all_tokens = []
     all_boundaries = []
-    for file in all_files[:100]:
+    for file in all_files[:10]:
         with open(PATH + file, 'r') as f:
             words, tokens, boundaries = parse_file_text(f.read())
             all_words.append(words)
 
-            while len(tokens) > 1024:
-                all_tokens.append(tokens[:1024])
-                all_boundaries.append(boundaries[:1024])
-                tokens = tokens[1024:]
-                boundaries = boundaries[1024:]
+            while len(tokens) > 128:
+                all_tokens.append(tokens[:128])
+                all_boundaries.append(boundaries[:128])
+                tokens = tokens[128:]
+                boundaries = boundaries[128:]
     print("DONE IMPORT DATA")
     return all_words, all_tokens, all_boundaries
 

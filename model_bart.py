@@ -316,11 +316,11 @@ class PointerNetworks(nn.Module):
             cur_boundary = []
             cur_b_start = []
             cur_align_matrix = []
+            #
+            # cur_sentence_vectors = self.nnEm(curX)  # output: [seq,features]
 
-            cur_sentence_vectors = self.nnEm(curX)  # output: [seq,features]
 
-
-            if self.rnn_type =='LSTM':# need h_end,c_end
+            if self.decoder_type =='LSTM':# need h_end,c_end
 
 
                 h_end = hend[0].permute(1, 0, 2).contiguous().view(batch_size, self.num_rnn_layers,-1)
@@ -331,11 +331,11 @@ class PointerNetworks(nn.Module):
 
                 h_pass = (curh0,curc0)
             else: # only need h_end
+                h_pass = hend.permute(1, 0, 2)
 
-
-                h_end = hend.permute(1, 0, 2).contiguous().view(batch_size, self.num_rnn_layers,-1)
-                curh0 = h_end[i].unsqueeze(0).permute(1, 0, 2)
-                h_pass = curh0
+                # h_end = hend.permute(1, 0, 2).contiguous().view(batch_size, self.num_rnn_layers,-1)
+                # curh0 = h_end[i].unsqueeze(0).permute(1, 0, 2)
+                # h_pass = curh0
 
 
 
@@ -343,7 +343,7 @@ class PointerNetworks(nn.Module):
 
             Not_break = True
 
-            loop_in = cur_sentence_vectors[0,:].unsqueeze(0).unsqueeze(0)  #[1,1,H]
+            # loop_in = cur_sentence_vectors[0,:].unsqueeze(0).unsqueeze(0)  #[1,1,H]
             loop_hc = h_pass
 
 
@@ -352,14 +352,15 @@ class PointerNetworks(nn.Module):
             loop_j =0
             while (Not_break): #if not end
 
-                loop_o, loop_hc = self.decoder_rnn(loop_in,loop_hc)
+                loop_o, loop_hc = self.decoder_rnn(h_pass)
+                loop_o = loop_o[loop_j].squeeze(1)
 
 
                 #TODO: make it point backward
 
                 predict_range = list(range(loopstart,curL))
                 curencoder_hn_back = curencoder_hn[predict_range,:]
-                cur_logists, cur_weights = self.pointerLayer(curencoder_hn_back, loop_o.squeeze(0).squeeze(0))
+                cur_logists, cur_weights = self.pointerLayer(curencoder_hn_back, loop_o)
 
                 cur_align_vector = np.zeros(curL)
                 cur_align_vector[predict_range]=cur_weights.data.cpu().numpy()[0]
@@ -399,7 +400,7 @@ class PointerNetworks(nn.Module):
                 else:
                     cur_boundary.append(ori_pred_index)
 
-                    loop_in = cur_sentence_vectors[ori_pred_index+1,:].unsqueeze(0).unsqueeze(0)
+                    # loop_in = cur_sentence_vectors[ori_pred_index+1,:].unsqueeze(0).unsqueeze(0)
                     cur_b_start.append(loopstart)
 
                     loopstart = ori_pred_index+1  # start =  pred_end + 1
