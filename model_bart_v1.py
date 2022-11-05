@@ -310,6 +310,10 @@ class PointerNetworks(nn.Module):
 
             curL = lens[i]
             curY_index = Yindex[i]
+
+            if not np.any(curY_index):
+                continue
+
             curX = X[i]
             cur_end_boundary =curY_index[-1]
 
@@ -414,7 +418,8 @@ class PointerNetworks(nn.Module):
             batch_boundary_start.append(cur_b_start)
             batch_align_matrix.append(cur_align_matrix)
 
-        batch_loss = batch_loss / LoopN
+        if LoopN != 0:
+            batch_loss = batch_loss / LoopN
 
         batch_boundary=np.array(batch_boundary)
         batch_boundary_start = np.array(batch_boundary_start)

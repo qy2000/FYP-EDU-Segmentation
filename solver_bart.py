@@ -60,7 +60,7 @@ def align_variable_numpy(X,maxL,paddingNumber):
     return aligned
 
 
-def sample_a_sorted_batch_from_numpy(numpyX,numpyY,batch_size,use_cuda):
+def sample_a_sorted_batch_from_numpy(numpyX,numpyX_mask,numpyY,batch_size,use_cuda):
 
 
     if batch_size != None:
@@ -69,6 +69,7 @@ def sample_a_sorted_batch_from_numpy(numpyX,numpyY,batch_size,use_cuda):
         select_index = np.array(range(len(numpyY)))
 
     batch_x = copy.deepcopy(numpyX[select_index])
+    batch_x_mask = copy.deepcopy(numpyX_mask[select_index])
     batch_y = copy.deepcopy(numpyY[select_index])
 
     index_decoder_X,index_decoder_Y = get_decoder_index_XY(batch_y)
@@ -84,6 +85,7 @@ def sample_a_sorted_batch_from_numpy(numpyX,numpyY,batch_size,use_cuda):
     idx = idx[::-1]  # decreasing
 
     batch_x = batch_x[idx]
+    batch_x_mask = batch_x_mask[idx]
     batch_y = batch_y[idx]
     all_lens = all_lens[idx]
 
@@ -95,8 +97,9 @@ def sample_a_sorted_batch_from_numpy(numpyX,numpyY,batch_size,use_cuda):
 
 
 
-    batch_x = align_variable_numpy(batch_x,maxL,0)
-    batch_y = align_variable_numpy(batch_y,maxL,2)
+    # batch_x = align_variable_numpy(batch_x,maxL,0)
+    # batch_x_mask = align_variable_numpy(batch_x_mask, maxL, 0)
+    # batch_y = align_variable_numpy(batch_y,maxL,2)
 
 
 
@@ -106,6 +109,7 @@ def sample_a_sorted_batch_from_numpy(numpyX,numpyY,batch_size,use_cuda):
 
 
     batch_x = Variable(torch.from_numpy(batch_x.astype(np.int64)))
+    batch_x_mask = Variable(torch.from_numpy(batch_x_mask.astype(np.int64)))
 
 
 
@@ -114,18 +118,19 @@ def sample_a_sorted_batch_from_numpy(numpyX,numpyY,batch_size,use_cuda):
 
 
 
-    return  numpy_batch_x,batch_x,batch_y,index_decoder_X,index_decoder_Y,all_lens,maxL
+    return  numpy_batch_x,batch_x, batch_x_mask, batch_y,index_decoder_X,index_decoder_Y,all_lens,maxL
 
 
 
 
 class TrainSolver(object):
-    def __init__(self, model,train_x,train_y,dev_x,dev_y,save_path,batch_size,eval_size,epoch, lr,lr_decay_epoch,weight_decay,use_cuda):
+    def __init__(self, model,train_x,train_x_mask,train_y,dev_x,dev_x_mask,dev_y,save_path,batch_size,eval_size,epoch, lr,lr_decay_epoch,weight_decay,use_cuda):
 
         self.lr = lr
         self.model = model
         self.epoch = epoch
         self.train_x = train_x
+        self.train_x_mask = train_x_mask
         self.train_y = train_y
         self.use_cuda = use_cuda
         self.batch_size = batch_size
@@ -134,6 +139,7 @@ class TrainSolver(object):
 
 
         self.dev_x, self.dev_y = dev_x, dev_y
+        self.dev_x_mask = dev_x_mask
 
         self.model = model
         self.save_path = save_path
@@ -147,9 +153,10 @@ class TrainSolver(object):
         select_index = random.sample(range(len(self.train_y)),self.eval_size)
 
         test_tr_x = self.train_x[select_index]
+        test_tr_x_mask = self.train_x_mask[select_index]
         test_tr_y = self.train_y[select_index]
 
-        return test_tr_x,test_tr_y
+        return test_tr_x,test_tr_x_mask,test_tr_y
 
 
 
@@ -210,7 +217,7 @@ class TrainSolver(object):
 
 
 
-    def check_accuracy(self,dataX,dataY):
+    def check_accuracy(self,dataX,dataX_mask,dataY):
 
 
         need_loop = int(np.ceil(len(dataY) / self.batch_size))
@@ -231,11 +238,11 @@ class TrainSolver(object):
             if endN > len(dataY):
                 endN = len(dataY)
 
-            numpy_batch_x, batch_x, batch_y, index_decoder_X, index_decoder_Y, all_lens, maxL = sample_a_sorted_batch_from_numpy(
-                dataX[startN:endN], dataY[startN:endN], None, self.use_cuda)
+            numpy_batch_x, batch_x, batch_x_mask, batch_y, index_decoder_X, index_decoder_Y, all_lens, maxL = sample_a_sorted_batch_from_numpy(
+                dataX[startN:endN], dataX_mask[startN:endN], dataY[startN:endN], None, self.use_cuda)
 
 
-            batch_ave_loss, batch_boundary, batch_boundary_start, batch_align_matrix = self.model.predict(batch_x,
+            batch_ave_loss, batch_boundary, batch_boundary_start, batch_align_matrix = self.model.predict(batch_x, batch_x_mask,
                                                                                                       index_decoder_Y,
                                                                                                   all_lens)
 
@@ -279,7 +286,7 @@ class TrainSolver(object):
 
     def train(self):
 
-        self.test_train_x, self.test_train_y = self.sample_dev()
+        self.test_train_x, self.test_train_x_mask, self.test_train_y = self.sample_dev()
 
         optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.model.parameters()), lr=self.lr, weight_decay=self.weight_decay)
 
@@ -300,8 +307,8 @@ class TrainSolver(object):
             for iter in range(num_each_epoch):
                 print("epoch:%d,iteration:%d" % (epoch, iter))
 
-                numpy_batch_x,batch_x, batch_y, index_decoder_X, index_decoder_Y, all_lens, maxL = sample_a_sorted_batch_from_numpy(
-                    self.train_x, self.train_y, self.batch_size, self.use_cuda)
+                numpy_batch_x, batch_x, batch_x_mask, batch_y, index_decoder_X, index_decoder_Y, all_lens, maxL = sample_a_sorted_batch_from_numpy(
+                    self.train_x, self.train_x_mask, self.train_y, self.batch_size, self.use_cuda)
 
                 self.model.zero_grad()
 
@@ -309,7 +316,7 @@ class TrainSolver(object):
                     continue
 
 
-                neg_loss = self.model.neg_log_likelihood(batch_x, index_decoder_X, index_decoder_Y,all_lens)
+                neg_loss = self.model.neg_log_likelihood(batch_x, batch_x_mask, index_decoder_X, index_decoder_Y,all_lens)
 
 
 
@@ -328,9 +335,9 @@ class TrainSolver(object):
 
             self.model.eval()
 
-            tr_batch_ave_loss, tr_pre, tr_rec, tr_f1 ,visdata=    self.check_accuracy(self.test_train_x,self.test_train_y)
+            tr_batch_ave_loss, tr_pre, tr_rec, tr_f1 ,visdata=    self.check_accuracy(self.test_train_x, self.test_train_x_mask, self.test_train_y)
 
-            dev_batch_ave_loss, dev_pre, dev_rec, dev_f1, visdata =self.check_accuracy(self.dev_x,self.dev_y)
+            dev_batch_ave_loss, dev_pre, dev_rec, dev_f1, visdata =self.check_accuracy(self.dev_x, self.dev_x_mask, self.dev_y)
             print()
 
             if best_f1 < dev_f1:

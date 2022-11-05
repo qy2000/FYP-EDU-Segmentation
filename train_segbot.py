@@ -5,17 +5,19 @@ import numpy as np
 import os
 import torch
 from solver import TrainSolver
-from model_bart import PointerNetworks
+from model_bart_v1 import PointerNetworks
 # from model import PointerNetworks
 all_text, all_tokens, all_boundaries = read_data(PATH)
-train_x = np.array(all_tokens[:8])
-train_y = np.array(all_boundaries[:8])
-test_x = np.array(all_tokens[8:])
-test_y = np.array(all_boundaries[8:])
-SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults"
+print(len(all_tokens))
+idx = int(len(all_tokens)*0.7)
+train_x = np.array(all_tokens[:idx], dtype=object)
+train_y = np.array(all_boundaries[:idx], dtype=object)
+test_x = np.array(all_tokens[idx:], dtype=object)
+test_y = np.array(all_boundaries[idx:], dtype=object)
+SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults100BART_1000"
 # os.rmdir(SAVE_PATH)
 
-# my_model = PointerNetworks(voca_size=2, voc_embeddings=np.ndarray(shape=(2, 300), dtype=float), word_dim=300,
+# my_model = PointerNetworks(voca_size=80, voc_embeddings=np.ndarray(shape=(80, 300), dtype=float), word_dim=300,
 #                            hidden_dim=10, is_bi_encoder_rnn=True, rnn_type='GRU', rnn_layers=3,
 #                            dropout_prob=0.5, use_cuda=False, finedtuning=True, isbanor=True)
 

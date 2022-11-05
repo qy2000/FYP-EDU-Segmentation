@@ -12,7 +12,7 @@ import numpy as np
 PATH = "C:/Users/qingy/Downloads/FYP/RST_SEGMENTATION_DATA/RST_SEGMENTATION_DATA/SEN_WITH_EDU/TRAINING/"
 tokenizer = BartTokenizer.from_pretrained("facebook/bart-base", add_prefix_space=True)
 
-pattern = fr'[{re.escape(string.punctuation)}]'
+# pattern = fr'[{re.escape(string.punctuation)}]'
 
 
 def bart_tokenizer(text: str) -> List[int]:
@@ -24,9 +24,9 @@ def bart_tokenizer(text: str) -> List[int]:
     # [CLS]: 0
     # [SEP]: 2
     # < pad >: 1
-    # tokens = [token for token in tokens if token != 0 or token != 2 or token != 1]
+    tokens = tokens[1:-1]
     # print(tokens)
-    # dec = tokenizer.decode(tokens)
+    dec = tokenizer.decode(tokens)
     # print(dec)
     return tokens
 
@@ -36,17 +36,20 @@ def read_data(path: str):
     all_words = []
     all_tokens = []
     all_boundaries = []
-    for file in all_files[:10]:
+    for file in all_files[:100]:
         with open(PATH + file, 'r') as f:
             words, tokens, boundaries = parse_file_text(f.read())
             all_words.append(words)
 
-            while len(tokens) > 128:
-                all_tokens.append(tokens[:128])
-                all_boundaries.append(boundaries[:128])
-                tokens = tokens[128:]
-                boundaries = boundaries[128:]
-    print("DONE IMPORT DATA")
+            while len(tokens) > 1000:
+                all_tokens.append(tokens[:1000])
+                all_boundaries.append(boundaries[:1000])
+                tokens = tokens[1000:]
+                boundaries = boundaries[1000:]
+
+        all_tokens.append(tokens)
+        all_boundaries.append(boundaries)
+
     return all_words, all_tokens, all_boundaries
 
 
@@ -69,6 +72,8 @@ def parse_file_text(file_text: str):
 
 
     return words, tokens, boundaries
+
+
 
 
 read_data(PATH)
