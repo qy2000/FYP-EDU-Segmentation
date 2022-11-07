@@ -132,7 +132,6 @@ def read_data():
                     all_tokens.append(np.asarray(cur_tokens))
                     all_masks.append(np.asarray(cur_mask))
                     all_boundaries.append(np.asarray(cur_boundaries))
-                    print(len(cur_tokens), len(cur_mask))
 
                     cur_tokens = []
                     cur_mask = []

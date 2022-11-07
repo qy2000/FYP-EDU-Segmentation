@@ -15,7 +15,7 @@ train_y = all_boundaries[:idx]
 test_x = all_tokens[idx:]
 test_x_mask = all_masks[idx:]
 test_y = all_boundaries[idx:]
-SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults100BART_samelen"
+SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults100BART_samelen1"
 
 my_model = PointerNetworks(voca_size=2, voc_embeddings=np.ndarray(shape=(2, 300), dtype=float), word_dim=300,
                            hidden_dim=10, is_bi_encoder_rnn=True, encoder_type='BART', decoder_type='GRU', rnn_layers=6,
