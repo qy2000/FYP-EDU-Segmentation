@@ -2,16 +2,16 @@ import re
 from typing import List
 
 from nltk.tokenize import word_tokenize
-import pickle
 import numpy as np
 
 import torch
-from transformers import BartTokenizer
 
+from config import TOKENIZER
 from import_data_bart import bart_tokenizer
 from solver_bart import TrainSolver
 
 from model import PointerNetworks
+
 
 
 class Lang:
@@ -72,9 +72,6 @@ def get_mapping(X, Y, D):
     return X_map, Y_map
 
 
-tokenizer = BartTokenizer.from_pretrained("facebook/bart-base", add_prefix_space=True)
-
-
 def parse_input(inputstring: str):
     max_tokenizer_input_len = 128
 
@@ -126,9 +123,6 @@ def get_tokens_mask_boundaries(cur_words: List):
     return tokens, mask, boundaries
 
 
-tokenizer = BartTokenizer.from_pretrained("facebook/bart-base", add_prefix_space=True)
-
-
 def main_input_output(inputstring):
     X_in, X_mask, Y_in = parse_input(inputstring)
     print(X_in)
@@ -154,7 +148,7 @@ def main_input_output(inputstring):
 
     for i, END in enumerate(end_b):
         print(start_b[i], END)
-        seg = tokenizer.decode(X_in[0][start_b[i]: END])
+        seg = TOKENIZER.decode(X_in[0][start_b[i]: END])
         print(seg)
 
     return segments

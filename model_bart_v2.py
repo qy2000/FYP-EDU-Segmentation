@@ -4,8 +4,9 @@ import torch.nn as nn
 import torch.nn.utils.rnn as R
 import torch.nn.functional as F
 from torch.autograd import Variable
-from transformers import BartModel
 import numpy as np
+
+from config import BART_MODEL
 
 
 class PointerNetworks(nn.Module):
@@ -20,7 +21,7 @@ class PointerNetworks(nn.Module):
         self.nnDropout = nn.Dropout(dropout_prob)
 
         if encoder_type == 'BART':
-            self.encoder_bart = BartModel.from_pretrained("facebook/bart-base")
+            self.encoder_bart = BART_MODEL
             self.hidden_dim = self.encoder_bart.config.hidden_size
 
         if decoder_type in ['LSTM', 'GRU']:
@@ -59,7 +60,7 @@ class PointerNetworks(nn.Module):
 
     def pointerEncoder(self ,Xin, Xin_mask):
 
-        model = BartModel.from_pretrained("facebook/bart-base", output_hidden_states=True)
+        model = BART_MODEL
         outputs = model(input_ids=Xin, attention_mask=Xin_mask)
 
         h = outputs.encoder_last_hidden_state

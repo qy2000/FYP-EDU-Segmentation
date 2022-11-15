@@ -1,16 +1,12 @@
 import os
 from typing import List
-import string
-import re
-from transformers import BartTokenizer
 import numpy as np
+
+from config import PATH, TOKENIZER, SAMPLE_NUM
 
 # TODO: change current code such that BART tokenizer tokenizes which discourse unit
 #  based on the separators and add boundaries accordingly
 #  convert all list to nd array
-
-PATH = "C:/Users/qingy/Downloads/FYP/RST_SEGMENTATION_DATA/RST_SEGMENTATION_DATA/SEN_WITH_EDU/TRAINING/"
-tokenizer = BartTokenizer.from_pretrained("facebook/bart-base", add_prefix_space=True)
 
 
 def get_average_max_edu_len():
@@ -19,14 +15,15 @@ def get_average_max_edu_len():
     edu_num = 0
     max_edu_len = 0
     max_token_len = 0
-    for file in all_files[:100]:
+
+    for file in all_files[:SAMPLE_NUM]:
         with open(PATH + file, 'r') as f:
             file_text = f.read()
             edu_list = file_text.split("EDU_BREAK")
             for edu in edu_list:
                 cur_edu_len = len(edu.split(" "))
                 max_edu_len = max(cur_edu_len, max_edu_len)
-                cur_token_len = len(tokenizer.encode(edu))
+                cur_token_len = len(TOKENIZER.encode(edu))
                 max_token_len = max(max_token_len, cur_token_len)
                 total_edu_len += cur_edu_len
                 edu_num += 1
@@ -67,16 +64,16 @@ def bart_tokenizer(text: str) -> List[int]:
     Explicitly differentiate real tokens from padding tokens with the “attention mask”.
 
     '''
-    tokens = tokenizer.encode_plus(
+    tokens = TOKENIZER.encode_plus(
                         text,                      # Sentence to encode.
-                        add_special_tokens=True, # Add '[CLS]' and '[SEP]'
+                        add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
                         return_attention_mask=True,   # Construct attn. masks.
                    )
-    # print(tokens)
-    dec = tokenizer.decode(tokens['input_ids'])
-    # print(dec)
-    # print(tokens['input_ids'], tokens['attention_mask'])
 
+    dec = TOKENIZER.decode(tokens['input_ids'])
+    # print(dec)
+
+    # remove sep tokens
     return tokens['input_ids'][1:-1], tokens['attention_mask'][1:-1]
 
 
@@ -88,7 +85,7 @@ def read_data():
     all_masks = []
     all_boundaries = []
 
-    for file in all_files[:100]:
+    for file in all_files[:SAMPLE_NUM]:
         with open(PATH + file, 'r') as f:
             file_text = f.read()
 
