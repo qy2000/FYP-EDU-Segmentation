@@ -66,7 +66,7 @@ def main_input_output(inputstring):
     X_in, X_mask, Y_in = parse_input(inputstring)
     print(X_in)
 
-    mymodel = torch.load(r'model_epoch_6_samelen.torchsave', map_location=lambda storage, loc: storage)
+    mymodel = torch.load(r'model_epoch_5.torchsave', map_location=lambda storage, loc: storage)
     mymodel.use_cuda = False
 
     mymodel.eval()
