@@ -2,22 +2,18 @@ import os
 from typing import List
 import numpy as np
 
-from config import TOKENIZER, SAMPLE_NUM
-
-# TODO: change current code such that BART tokenizer tokenizes which discourse unit
-#  based on the separators and add boundaries accordingly
-#  convert all list to nd array
+from config import PATH, SAMPLE_NUM, TOKENIZER
 
 
-def get_average_max_edu_len(path: str):
-    all_files = os.listdir(path)
+def get_average_max_edu_len():
+    all_files = os.listdir(PATH)
     total_edu_len = 0
     edu_num = 0
     max_edu_len = 0
     max_token_len = 0
 
-    for file in all_files:
-        with open(path + file, 'r') as f:
+    for file in all_files[:SAMPLE_NUM]:
+        with open(PATH + file, 'r') as f:
             file_text = f.read()
             edu_list = file_text.split("EDU_BREAK")
             for edu in edu_list:
@@ -37,10 +33,10 @@ def get_average_max_edu_len(path: str):
     return avg_edu_len, max_edu_len, max_token_len
 
 
-def select_bart_encoder_input_len(path: str):
+def select_bart_encoder_input_len():
     options = [256, 512, 1024]
 
-    _, _, max_token_len = get_average_max_edu_len(path)
+    _, _, max_token_len = get_average_max_edu_len()
 
     for option in options:
         if option >= max_token_len:
@@ -77,16 +73,16 @@ def bart_tokenizer(text: str) -> List[int]:
     return tokens['input_ids'][1:-1], tokens['attention_mask'][1:-1]
 
 
-def read_data(path: str):
-    all_files = os.listdir(path)
-    max_token_len = select_bart_encoder_input_len(path)
+def read_data():
+    all_files = os.listdir(PATH)
+    max_token_len = select_bart_encoder_input_len()
 
     all_tokens = []
     all_masks = []
     all_boundaries = []
 
-    for file in all_files:
-        with open(path + file, 'r') as f:
+    for file in all_files[:SAMPLE_NUM]:
+        with open(PATH + file, 'r') as f:
             file_text = f.read()
 
             '''
@@ -144,5 +140,5 @@ def read_data(path: str):
 
 
 if __name__ == '__main__':
-    # get_average_max_edu_len()
+    get_average_max_edu_len()
     read_data()

@@ -9,6 +9,7 @@ import random
 from torch.nn.utils import clip_grad_norm
 import copy
 
+from sklearn.metrics import f1_score
 
 import os
 
@@ -191,6 +192,21 @@ class TrainSolver(object):
         return All_C,All_R,All_G
 
 
+    def get_batch_micro_metric_token(self,pre_b, ground_b):
+        pre_b_list = list(pre_b[0])
+        ground_b = ground_b[0]
+        pre_b_formatted = [0] * len(ground_b)
+        for i in range(len(pre_b_formatted)):
+            if i in pre_b_list:
+                pre_b_formatted[i] = 1
+
+        pre_b_formatted = np.asarray(pre_b_formatted)
+
+        ba_f1_token = f1_score(ground_b, pre_b_formatted)
+
+        return ba_f1_token
+
+
 
 
 
@@ -222,16 +238,17 @@ class TrainSolver(object):
 
         need_loop = int(np.ceil(len(dataY) / self.batch_size))
 
-        all_ave_loss =[]
-        all_boundary =[]
+        all_ave_loss = []
+        all_boundary = []
         all_boundary_start = []
         all_align_matrix = []
-        all_index_decoder_y =[]
+        all_index_decoder_y = []
         all_x_save = []
 
-        all_C =[]
-        all_R =[]
-        all_G =[]
+        all_C = []
+        all_R = []
+        all_G = []
+        all_f1_token = []
         for lp in range(need_loop):
             startN = lp*self.batch_size
             endN =  (lp+1)*self.batch_size
@@ -262,13 +279,16 @@ class TrainSolver(object):
             all_R.extend(ba_R)
             all_G.extend(ba_G)
 
+            ba_f1_token = self.get_batch_micro_metric_token(batch_boundary,batch_y)
+            all_f1_token.append(ba_f1_token)
 
         ba_pre = np.sum(all_C)/ np.sum(all_R)
         ba_rec = np.sum(all_C)/ np.sum(all_G)
         ba_f1 = 2*ba_pre*ba_rec/ (ba_pre+ba_rec)
+        ba_f1_token = np.sum(all_f1_token)/ len(all_f1_token)
 
 
-        return np.mean(all_ave_loss),ba_pre,ba_rec,ba_f1, (all_x_save,all_index_decoder_y,all_boundary, all_boundary_start, all_align_matrix)
+        return np.mean(all_ave_loss),ba_pre,ba_rec,ba_f1, ba_f1_token, (all_x_save,all_index_decoder_y,all_boundary, all_boundary_start, all_align_matrix)
 
 
 
@@ -335,9 +355,9 @@ class TrainSolver(object):
 
             self.model.eval()
 
-            tr_batch_ave_loss, tr_pre, tr_rec, tr_f1 ,visdata=    self.check_accuracy(self.test_train_x, self.test_train_x_mask, self.test_train_y)
+            tr_batch_ave_loss, tr_pre, tr_rec, tr_f1, tr_f1_token, visdata = self.check_accuracy(self.test_train_x, self.test_train_x_mask, self.test_train_y)
 
-            dev_batch_ave_loss, dev_pre, dev_rec, dev_f1, visdata =self.check_accuracy(self.dev_x, self.dev_x_mask, self.dev_y)
+            dev_batch_ave_loss, dev_pre, dev_rec, dev_f1, dev_f1_token, visdata = self.check_accuracy(self.dev_x, self.dev_x_mask, self.dev_y)
             print()
 
             if best_f1 < dev_f1:
@@ -348,8 +368,8 @@ class TrainSolver(object):
 
 
 
-            save_data = [epoch,tr_batch_ave_loss,tr_pre,tr_rec,tr_f1,
-                         dev_batch_ave_loss,dev_pre,dev_rec,dev_f1]
+            save_data = [epoch,tr_batch_ave_loss,tr_pre,tr_rec,tr_f1,tr_f1_token,
+                         dev_batch_ave_loss,dev_pre,dev_rec,dev_f1,dev_f1_token]
 
 
             save_file_name = 'bs_{}_es_{}_lr_{}_lrdc_{}_wd_{}_epoch_loss_acc_pk_wd.txt'.format(self.batch_size,self.eval_size,self.lr,self.lr_decay_epoch,self.weight_decay)

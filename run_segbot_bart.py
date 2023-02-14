@@ -10,67 +10,6 @@ from config import TOKENIZER
 from import_data_bart import bart_tokenizer
 from solver_bart import TrainSolver
 
-from model import PointerNetworks
-
-
-
-class Lang:
-    def __init__(self, name):
-        self.name = name
-        self.word2index = {"RE_DIGITS": 1, "UNKNOWN": 2, "PADDING": 0}
-        self.word2count = {"RE_DIGITS": 1, "UNKNOWN": 1, "PADDING": 1}
-        self.index2word = {0: "PADDING", 1: "RE_DIGITS", 2: "UNKNOWN"}
-        self.n_words = 3  # Count SOS and EOS
-
-    def addSentence(self, sentence):
-        for word in sentence.strip('\n').strip('\r').split(' '):
-            self.addWord(word)
-
-    def addWord(self, word):
-        if word not in self.word2index:
-            self.word2index[word] = self.n_words
-            self.word2count[word] = 1
-            self.index2word[self.n_words] = word
-            self.n_words += 1
-        else:
-            self.word2count[word] += 1
-
-
-def mytokenizer(inS, all_dict):
-    # repDig = re.sub(r'\d+[\.,/]?\d+','RE_DIGITS',inS)
-    repDig = re.sub(r'\d*[\d,]*\d+', 'RE_DIGITS', inS)
-    toked = word_tokenize(repDig)
-    or_toked = word_tokenize(inS)
-    re_unk_list = []
-    ori_list = []
-
-    for (i, t) in enumerate(toked):
-        if t not in all_dict and t not in ['RE_DIGITS']:
-            re_unk_list.append('UNKNOWN')
-            ori_list.append(or_toked[i])
-        else:
-            re_unk_list.append(t)
-            ori_list.append(or_toked[i])
-
-    labey_edus = [0] * len(re_unk_list)
-    labey_edus[-1] = 1
-
-    return ori_list, re_unk_list, labey_edus
-
-
-def get_mapping(X, Y, D):
-    X_map = []
-    for w in X:
-        if w in D:
-            X_map.append(D[w])
-        else:
-            X_map.append(D['UNKNOWN'])
-
-    X_map = np.array([X_map])
-    Y_map = np.array([Y])
-
-    return X_map, Y_map
-
 
 def parse_input(inputstring: str):
     max_tokenizer_input_len = 128
@@ -139,7 +78,7 @@ def main_input_output(inputstring):
 
     all_visdata = []
 
-    test_batch_ave_loss, test_pre, test_rec, test_f1, visdata = mysolver.check_accuracy(X_in, X_mask, Y_in)
+    test_batch_ave_loss, test_pre, test_rec, test_f1, test_f1_token, visdata = mysolver.check_accuracy(X_in, X_mask, Y_in)
     print(visdata)
 
     start_b = visdata[3][0]
@@ -157,8 +96,8 @@ def main_input_output(inputstring):
 if __name__ == '__main__':
 
     #sent='Singapore recently announced that it is moving to a new Covid-19 innoculation strategy, with the focus on an individual’s vaccination being up-to-date, similar to how influenza jabs are administered seasonally. This comes as the country fights another wave of coronavirus infections, spurred by the emergence of the Omicron XBB sub-variant. With most people having received their primary vaccination series, as well as at least one booster, when should one take a second or third booster shot? The Straits Times asks the experts.'
-    sent = 'Sheraton and Pan Am said they are assured under the Soviet joint-venture law that they can repatriate profits from their hotel venture. They have been doing this for the past seventeen years and it has been successful.'
-    #sent = "The government is sharpening its newest weapon against white-collar defendants : the power to prevent them from paying their legal bills . And defense lawyers are warning that they won't stick around if they don't get paid . The issue has come to a boil in Newark , N.J. , where federal prosecutors have warned lawyers for Eddie Antar that if the founder and former chairman of Crazy Eddie Inc. is indicted , the government may move to seize the money that Mr. Antar is using to pay legal fees ."
+    # sent = 'Sheraton and Pan Am said they are assured under the Soviet joint-venture law that they can repatriate profits from their hotel venture. They have been doing this for the past seventeen years and it has been successful.'
+    sent = "The government is sharpening its newest weapon against white-collar defendants : the power to prevent them from paying their legal bills . And defense lawyers are warning that they won't stick around if they don't get paid . The issue has come to a boil in Newark , N.J. , where federal prosecutors have warned lawyers for Eddie Antar that if the founder and former chairman of Crazy Eddie Inc. is indicted , the government may move to seize the money that Mr. Antar is using to pay legal fees ."
     output_seg = main_input_output(sent)
     for ss in output_seg:
         print(ss)
