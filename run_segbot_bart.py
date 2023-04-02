@@ -88,7 +88,7 @@ def get_tokens_mask_boundaries(cur_words: List):
 def main_input_output(inputstring):
     X_in, X_mask, Y_in = parse_input(inputstring)
 
-    mymodel = torch.load(r'model_epoch_0_optuna_37.torchsave', map_location=lambda storage, loc: storage)
+    mymodel = torch.load(r'model_segbot_bart.torchsave', map_location=lambda storage, loc: storage)
     mymodel.use_cuda = False
 
     mymodel.eval()
