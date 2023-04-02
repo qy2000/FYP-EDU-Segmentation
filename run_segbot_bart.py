@@ -121,23 +121,21 @@ if __name__ == '__main__':
     sent='Singapore recently announced that it is moving to a new Covid-19 innoculation strategy, with the focus on an individual’s vaccination being up-to-date, similar to how influenza jabs are administered seasonally. This comes as the country fights another wave of coronavirus infections, spurred by the emergence of the Omicron XBB sub-variant. '
     #sent="Aerial warfare has been around for much longer than modern aircraft have. More than 1,000 years ago, armies in China used incendiary kites known as fire crows to rain fire and debris upon their enemies. Since then, everything from kites to hot air balloons and airplanes have been used to inflict damage from above."
     sent = sent.replace(',', ' ,').replace('.', ' .')
-    all_files = os.listdir(TEST_PATH)
-    total = 0
-    for file in all_files:
-        with open(TEST_PATH + file, 'r') as f:
-            file_text = f.read()
-            sentences = file_text.split("\n")
-            total += len(sentences)
-            for sent in sentences:
-                try:
-                    print(sent)
-                    new_sent = sent.replace(" EDU_BREAK", "")
-                    output_seg =  main_input_output(new_sent)
-                    for ss in output_seg:
-                        print(ss)
-                except Exception as e:
-                    print(e)
-    print(total)
-    print("Total inference time")
-    print("--- %s seconds ---" % (time.time() - start_time))
     output_seg = main_input_output(sent)
+    # all_files = os.listdir(TEST_PATH)
+    # total = 0
+    # for file in all_files:
+    #     with open(TEST_PATH + file, 'r') as f:
+    #         file_text = f.read()
+    #         sentences = file_text.split("\n")
+    #         total += len(sentences)
+    #         for sent in sentences:
+    #             try:
+    #                 new_sent = sent.replace(" EDU_BREAK", "")
+    #                 output_seg =  main_input_output(new_sent)
+    #             except Exception as e:
+    #                 print(e)
+    # print(total)
+    # print("Total inference time")
+    # print("--- %s seconds ---" % (time.time() - start_time))
+

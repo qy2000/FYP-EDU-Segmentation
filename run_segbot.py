@@ -115,8 +115,9 @@ def main_input_output(inputstring):
     segments = []
 
     for i, END in enumerate(end_b):
+        print(start_b[i], END)
         START = start_b[i]
-        segments.append(' '.join(ori_X[START:END]))
+        print(' '.join(ori_X[START:END]))
 
     return segments
 
@@ -127,20 +128,22 @@ if __name__ == '__main__':
 
 
     sent='Sheraton and Pan Am said they are assured under the Soviet joint-venture law that they can repatriate profits from their hotel venture. They have been doing this for the past seventeen years and it has been successful.'
-    all_files = os.listdir(TEST_PATH)
-    total = 0
-    for file in all_files:
-        with open(TEST_PATH + file, 'r') as f:
-            file_text = f.read()
-            sentences = file_text.split("\n")
-            total += len(sentences)
-            # for sent in sentences:
-            #     try:
-            #         output_seg =  main_input_output(sent)
-            #         for ss in output_seg:
-            #             print(ss)
-            #     except Exception as e:
-            #         print(e)
-    print(total)
-    print("Total inference time")
-    print("--- %s seconds ---" % (time.time() - start_time))
+    output_seg = main_input_output(sent)
+
+    # all_files = os.listdir(TEST_PATH)
+    # total = 0
+    # for file in all_files:
+    #     with open(TEST_PATH + file, 'r') as f:
+    #         file_text = f.read()
+    #         sentences = file_text.split("\n")
+    #         total += len(sentences)
+    #         for sent in sentences:
+    #             try:
+    #                 output_seg =  main_input_output(sent)
+    #                 for ss in output_seg:
+    #                     print(ss)
+    #             except Exception as e:
+    #                 print(e)
+    # print(total)
+    # print("Total inference time")
+    # print("--- %s seconds ---" % (time.time() - start_time))
