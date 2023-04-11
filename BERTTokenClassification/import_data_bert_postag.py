@@ -87,7 +87,8 @@ def read_data():
             keep cls/sep tokens
             '''
 
-            edus = file_text.split("EDU_BREAK")
+            new_text = file_text.replace("\n", " EDU_BREAK")
+            edus = new_text.split(" EDU_BREAK")
 
             cur_tokens = []
             cur_postags = []

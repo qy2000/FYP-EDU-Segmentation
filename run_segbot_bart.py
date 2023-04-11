@@ -12,6 +12,11 @@ import os
 import time
 start_time = time.time()
 
+import re
+
+import warnings
+warnings.filterwarnings("ignore")
+
 def bart_tokenizer(text: str) -> List[int]:
     '''
     :param text:
@@ -95,7 +100,7 @@ def main_input_output(inputstring):
 
     mysolver = TrainSolver(mymodel, train_x='', train_x_mask='', train_y='', dev_x='',
                             dev_x_mask='', dev_y='', save_path='',
-                            batch_size=1, eval_size=1, epoch=10, lr=0.00016, lr_decay_epoch=1, weight_decay=0.0002,
+                            batch_size=1, eval_size=1, epoch=10, lr=0.001, lr_decay_epoch=1, weight_decay=0.002,
                             use_cuda=False)
 
     all_visdata = []
@@ -118,10 +123,19 @@ def main_input_output(inputstring):
 
 
 if __name__ == '__main__':
-    sent='Singapore recently announced that it is moving to a new Covid-19 innoculation strategy, with the focus on an individual’s vaccination being up-to-date, similar to how influenza jabs are administered seasonally. This comes as the country fights another wave of coronavirus infections, spurred by the emergence of the Omicron XBB sub-variant. '
+    #sent="In ASEAN, there are currently government initiatives to encourage renewable energy, with Singapore predicting that hydrogen could supply up to half of the power needs in Singapore by 2050 and Thailand with a Hydrogen goal of 10 Kilotons of oil equivalent in total by 2036."
+    #sent="Furthermore, the current advancements in technology for hydrogen energy is able to reduce costs in terms of production and storage of hydrogen energy. As the technology continues to improve, it is expected to further lower the cost of production, achieving economies of scale."
+    #sent='Singapore recently announced that it is moving to a new Covid-19 innoculation strategy, with the focus on an individual’s vaccination being up-to-date, similar to how influenza jabs are administered seasonally. This comes as the country fights another wave of coronavirus infections, spurred by the emergence of the Omicron XBB sub-variant. '
     #sent="Aerial warfare has been around for much longer than modern aircraft have. More than 1,000 years ago, armies in China used incendiary kites known as fire crows to rain fire and debris upon their enemies. Since then, everything from kites to hot air balloons and airplanes have been used to inflict damage from above."
-    sent = sent.replace(',', ' ,').replace('.', ' .')
+    print("----------- EDU Segmentation with Segbot with BART model: ----------")
+    sent = input("Enter sentence for EDU segmentation: \n")
+    sent = sent.replace(", ",  " , ").replace(". ",  " . ")
+    if sent[-1] == ".":
+        sent = sent + " "
+    print("\n")
+    print("---------- Start of EDU segmentation ----------")
     output_seg = main_input_output(sent)
+    print("---------- End of EDU segmentation ----------\n")
     # all_files = os.listdir(TEST_PATH)
     # total = 0
     # for file in all_files:
@@ -130,6 +144,7 @@ if __name__ == '__main__':
     #         sentences = file_text.split("\n")
     #         total += len(sentences)
     #         for sent in sentences:
+    #             print(sent)
     #             try:
     #                 new_sent = sent.replace(" EDU_BREAK", "")
     #                 output_seg =  main_input_output(new_sent)
