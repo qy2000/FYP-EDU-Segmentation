@@ -130,8 +130,6 @@ if __name__ == '__main__':
     print("----------- EDU Segmentation with Segbot with BART model: ----------")
     sent = input("Enter sentence for EDU segmentation: \n")
     sent = sent.replace(", ",  " , ").replace(". ",  " . ")
-    if sent[-1] == ".":
-        sent = sent + " "
     print("\n")
     print("---------- Start of EDU segmentation ----------")
     output_seg = main_input_output(sent)
