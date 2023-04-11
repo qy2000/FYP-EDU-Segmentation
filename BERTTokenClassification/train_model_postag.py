@@ -3,7 +3,7 @@ from solver_postag import train_engine
 
 all_tokens, all_masks, all_postags, all_boundaries = read_data()
 print("len all tokens:", len(all_tokens))
-idx = int(len(all_tokens)*0.7)
+idx = int(len(all_tokens)*0.8)
 train_x = all_tokens[:idx]
 train_x_mask = all_masks[:idx]
 train_x_postag_ids = all_postags[:idx]
