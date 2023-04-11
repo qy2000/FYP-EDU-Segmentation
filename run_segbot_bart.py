@@ -100,7 +100,7 @@ def main_input_output(inputstring):
 
     mysolver = TrainSolver(mymodel, train_x='', train_x_mask='', train_y='', dev_x='',
                             dev_x_mask='', dev_y='', save_path='',
-                            batch_size=1, eval_size=1, epoch=10, lr=0.001, lr_decay_epoch=1, weight_decay=0.002,
+                            batch_size=1, eval_size=1, epoch=10, lr=0.00015, lr_decay_epoch=1, weight_decay=0.0002,
                             use_cuda=False)
 
     all_visdata = []
@@ -130,6 +130,9 @@ if __name__ == '__main__':
     print("----------- EDU Segmentation with Segbot with BART model: ----------")
     sent = input("Enter sentence for EDU segmentation: \n")
     sent = sent.replace(", ",  " , ").replace(". ",  " . ")
+    # if sent[-1] == ".":
+    #     sent = sent + " "
+
     print("\n")
     print("---------- Start of EDU segmentation ----------")
     output_seg = main_input_output(sent)
