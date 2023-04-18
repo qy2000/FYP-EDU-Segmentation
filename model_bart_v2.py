@@ -76,7 +76,7 @@ class PointerNetworks(nn.Module):
         outputs = self.encoder_bart(input_ids=Xin, attention_mask=Xin_mask)
         o = outputs.encoder_last_hidden_state
         h = outputs.encoder_hidden_states[0]
-        h = h.view(256, 1, 768)
+        h = h.view(128, 1, 768)
         o = self.nnEnDropout(o)
 
         return o, h
