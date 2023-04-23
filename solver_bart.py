@@ -301,7 +301,7 @@ class TrainSolver(object):
 
         for epoch in range(self.epoch):
 
-            self.adjust_learning_rate(optimizer, epoch, 0.85, self.lr_decay_epoch)
+            self.adjust_learning_rate(optimizer, epoch, 0.5, self.lr_decay_epoch)
 
             track_epoch_loss = []
             for iter in range(num_each_epoch):
