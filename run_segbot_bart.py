@@ -159,16 +159,16 @@ if __name__ == '__main__':
     #sent="Furthermore, the current advancements in technology for hydrogen energy is able to reduce costs in terms of production and storage of hydrogen energy. As the technology continues to improve, it is expected to further lower the cost of production, achieving economies of scale."
     #sent='Singapore recently announced that it is moving to a new Covid-19 innoculation strategy, with the focus on an individual’s vaccination being up-to-date, similar to how influenza jabs are administered seasonally. This comes as the country fights another wave of coronavirus infections, spurred by the emergence of the Omicron XBB sub-variant. '
     #     sent="Aerial warfare has been around for much longer than modern aircraft have. More than 1,000 years ago, armies in China used incendiary kites known as fire crows to rain fire and debris upon their enemies. Since then, everything from kites to hot air balloons and airplanes have been used to inflict damage from above."
-    print("----------- EDU Segmentation with Segbot with BART model: ----------")
-    sent = input("Enter text for EDU segmentation: \n")
-    sent = sent.replace(", ",  " , ").replace(". ",  " . ").replace(
-        "; ",  " ; ")
-    if sent[-1] == ".":
-        sent = sent[:-1] + " ."
-    print("\n")
-    print("---------- Start of EDU segmentation ----------")
-    output_seg = main_input_output(sent)
-    print("---------- End of EDU segmentation ----------\n")
+    # print("----------- EDU Segmentation with Segbot with BART model: ----------")
+    # sent = input("Enter text for EDU segmentation: \n")
+    # sent = sent.replace(", ",  " , ").replace(". ",  " . ").replace(
+    #     "; ",  " ; ")
+    # if sent[-1] == ".":
+    #     sent = sent[:-1] + " ."
+    # print("\n")
+    # print("---------- Start of EDU segmentation ----------")
+    # output_seg = main_input_output(sent)
+    # print("---------- End of EDU segmentation ----------\n")
 
     '''
     Get inference time by each new line of input
@@ -191,57 +191,5 @@ if __name__ == '__main__':
     # print("Total inference time")
     # print("--- %s seconds ---" % (time.time() - start_time))
 
-
-    '''
-    Get inference time by every input of max 128 tokens
-    '''
-    # all_tokens, all_masks, _ = read_data(TEST_PATH)
-    # print("len all tokens:", len(all_tokens))
-    # x = all_tokens
-    # x_mask = all_masks
-    # y = []
-    #
-    # for tokens in all_tokens:
-    #     input_len = len(list(filter(lambda token: token != 1, tokens)))
-    #     boundaries = [0 for _ in range(input_len - 1)]
-    #     boundaries.append(1)
-    #     boundaries.extend([0] * (128 - input_len))
-    #     y.append(boundaries)
-    #
-    # end_of_tokenization_time = time.time()
-    #
-    # print("Total tokenization time")
-    # print("--- %s seconds ---" % (end_of_tokenization_time - start_time))
-    # mymodel = torch.load(r'model_segbot_bart_final.torchsave',
-    #                      map_location=lambda storage, loc: storage)
-    # mymodel.use_cuda = False
-    #
-    # mymodel.eval()
-    #
-    # mysolver = TrainSolver(mymodel, train_x='', train_x_mask='', train_y='', dev_x='',
-    #                        dev_x_mask='', dev_y='', save_path='',
-    #                        batch_size=1, eval_size=1, epoch=10, lr=0.00015, lr_decay_epoch=1, weight_decay=0.0002,
-    #                        use_cuda=False)
-    #
-    # for i in range(len(all_tokens)):
-    #     X_in = np.asarray([x[i]])
-    #     X_mask_in = np.asarray([x_mask[i]])
-    #     Y_in = np.asarray([y[i]])
-    #     all_visdata = []
-    #
-    #     test_batch_ave_loss, test_pre, test_rec, test_f1, visdata = mysolver.check_accuracy(X_in, X_mask_in, Y_in)
-    #
-    #     start_b = visdata[3][0]
-    #     end_b = visdata[2][0] + 1
-    #     segments = []
-    #
-    #     for i, END in enumerate(end_b):
-    #         print(start_b[i], END)
-    #         seg = TOKENIZER.decode(X_in[0][start_b[i]: END])
-    #         print(seg)
-    #
-    #
-    # print("Total inference time")
-    # print("--- %s seconds ---" % (time.time() - start_time))
 
 
