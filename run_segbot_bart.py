@@ -159,16 +159,16 @@ if __name__ == '__main__':
     #sent="Furthermore, the current advancements in technology for hydrogen energy is able to reduce costs in terms of production and storage of hydrogen energy. As the technology continues to improve, it is expected to further lower the cost of production, achieving economies of scale."
     #sent='Singapore recently announced that it is moving to a new Covid-19 innoculation strategy, with the focus on an individual’s vaccination being up-to-date, similar to how influenza jabs are administered seasonally. This comes as the country fights another wave of coronavirus infections, spurred by the emergence of the Omicron XBB sub-variant. '
     #     sent="Aerial warfare has been around for much longer than modern aircraft have. More than 1,000 years ago, armies in China used incendiary kites known as fire crows to rain fire and debris upon their enemies. Since then, everything from kites to hot air balloons and airplanes have been used to inflict damage from above."
-    # print("----------- EDU Segmentation with Segbot with BART model: ----------")
-    # sent = input("Enter text for EDU segmentation: \n")
-    # sent = sent.replace(", ",  " , ").replace(". ",  " . ").replace(
-    #     "; ",  " ; ")
-    # if sent[-1] == ".":
-    #     sent = sent[:-1] + " ."
-    # print("\n")
-    # print("---------- Start of EDU segmentation ----------")
-    # output_seg = main_input_output(sent)
-    # print("---------- End of EDU segmentation ----------\n")
+    print("----------- EDU Segmentation with Segbot with BART model: ----------")
+    sent = input("Enter text for EDU segmentation: \n")
+    sent = sent.replace(", ",  " , ").replace(". ",  " . ").replace(
+        "; ",  " ; ")
+    if sent[-1] == ".":
+        sent = sent[:-1] + " ."
+    print("\n")
+    print("---------- Start of EDU segmentation ----------")
+    output_seg = main_input_output(sent)
+    print("---------- End of EDU segmentation ----------\n")
 
     '''
     Get inference time by each new line of input
