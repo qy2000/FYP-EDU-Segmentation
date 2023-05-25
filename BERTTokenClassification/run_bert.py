@@ -108,7 +108,7 @@ def main_input_output(inputstring):
     model = transformers.BertForTokenClassification.from_pretrained('bert-base-uncased', num_labels=2)
 
     # Load the state dictionary
-    state_dict = torch.load(r'BERT_token_classification1',
+    state_dict = torch.load(r'BERT_token_classification_final',
                          map_location=torch.device('cpu'))
 
     # Remove the "module." prefix from the state keys
@@ -137,7 +137,7 @@ def main_input_output(inputstring):
             for boundary in boundaries[i]:
                 if (start == 0 or start != boundary):
                     print(start, boundary)
-                    seg = TOKENIZER.decode(x[i][start:boundary])
+                    seg = TOKENIZER.decode(x[i][start:boundary+1])
                     start = boundary + 1
                     print(seg)
                 else:
