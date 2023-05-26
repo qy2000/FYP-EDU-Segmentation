@@ -105,10 +105,10 @@ def parse_input(inputstring: str):
 
 def main_input_output(inputstring):
     x, x_mask, y = parse_input(inputstring)
-    model = transformers.BertForTokenClassification.from_pretrained('bert-base-uncased', num_labels=2)
+    model = transformers.BertForTokenClassification.from_pretrained('bert-base-cased', num_labels=2)
 
     # Load the state dictionary
-    state_dict = torch.load(r'BERT_token_classification_final',
+    state_dict = torch.load(r'BERT_token_classification_cased1.pth',
                          map_location=torch.device('cpu'))
 
     # Remove the "module." prefix from the state keys
