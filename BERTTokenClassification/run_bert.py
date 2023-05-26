@@ -108,7 +108,7 @@ def main_input_output(inputstring):
     model = transformers.BertForTokenClassification.from_pretrained('bert-base-cased', num_labels=2)
 
     # Load the state dictionary
-    state_dict = torch.load(r'BERT_token_classification_cased1.pth',
+    state_dict = torch.load(r'BERT_token_classification_final_cased.pth',
                          map_location=torch.device('cpu'))
 
     # Remove the "module." prefix from the state keys
