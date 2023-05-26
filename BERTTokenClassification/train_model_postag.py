@@ -12,7 +12,7 @@ test_x = all_tokens[idx:]
 test_x_mask = all_masks[idx:]
 test_x_postag_ids = all_postags[idx:]
 test_y = all_boundaries[idx:]
-SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults100BART_samelen2"
+SAVE_PATH = "C:/Users/qingy/Downloads/FYP/RunSegBot/TrainResults100BERT_postag"
 
 model, eval_predictions, eval_true_labels = train_engine(epoch=10,
                                                        train_x=train_x,

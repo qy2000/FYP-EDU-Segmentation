@@ -96,7 +96,7 @@ def get_batch_metric(true_labels, predictions):
         true_boundaries = []
         eval_boundaries = []
         for j in range(len(true_labels[i])):
-            if true_labels[i][j] == 1:
+            if true_labels[i][j] == 1 or predictions[i][j] == 1:
                 true_boundaries.append(true_labels[i][j])
                 eval_boundaries.append(predictions[i][j])
 
@@ -117,12 +117,13 @@ def get_batch_metric(true_labels, predictions):
 
 
 def train_engine(epoch, train_x, train_x_mask, train_y, test_x, test_x_mask, test_y):
-    model = transformers.BertForTokenClassification.from_pretrained('bert-base-uncased', num_labels=2)
+    model = transformers.BertForTokenClassification.from_pretrained('bert-base-cased', num_labels=2)
     model = nn.DataParallel(model)
     model = model.to(DEVICE)
 
     params = model.parameters()
     optimizer = torch.optim.Adam(params, lr=3e-5)
+    print("new")
 
     best_eval_loss = 1000000
     for i in range(epoch):
@@ -144,8 +145,8 @@ def train_engine(epoch, train_x, train_x_mask, train_y, test_x, test_x_mask, tes
 
         eval_f1_token, eval_pre_boundary, eval_rec_boundary, eval_f1_boundary = get_batch_metric(eval_true_labels, eval_predictions)
 
-        save_data = [epoch, train_loss.item(), train_pre_boundary, train_rec_boundary, train_f1_boundary, train_f1_token,
-                     eval_loss.item(), eval_pre_boundary, eval_rec_boundary, eval_f1_boundary, eval_f1_token]
+        save_data = [epoch, train_loss.item(), train_pre_boundary, train_rec_boundary, train_f1_boundary,
+                     eval_loss.item(), eval_pre_boundary, eval_rec_boundary, eval_f1_boundary]
 
         save_file_name = 'results_epochloss_f1score.txt'
 
@@ -159,6 +160,6 @@ def train_engine(epoch, train_x, train_x_mask, train_y, test_x, test_x_mask, tes
             best_eval_loss = eval_loss
 
             print("Saving the model")
-            torch.save(model.state_dict(), "BERT_token_classification")
+            torch.save(model.state_dict(), "BERT_token_classification_cased")
 
     return model, eval_predictions, eval_true_labels
